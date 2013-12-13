@@ -115,7 +115,6 @@ for img in sorted(os.listdir(datafolder)):
 canvas.write(thumbnailfolder+"/thumbnail.png")
 
 #ok now the zip.....
-#write_file_str(orafile, 'mimetype', 'image/openraster') # must be the first file written
 ora = zipfile.ZipFile('out.ora', 'w')
 ora.writestr('mimetype', 'image/openraster',zipfile.ZIP_STORED)
 ora.write(tmpfolder+"/stack.xml","stack.xml",zipfile.ZIP_DEFLATED)
