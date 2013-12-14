@@ -18,5 +18,5 @@ PythonMagick, ElementTree
 On Ubuntu 13.10  
 sudo apt-get install python-lxml python-pythonmagick 
  
-Limitations 
+Limitations:  
 Only one tileset, Alpha code... stay tuned... 
