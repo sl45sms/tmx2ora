@@ -9,7 +9,7 @@ For a game i need a large number of pre rendered images..
 Tiled help's a lot to create the visuals for the game but i need to add final touch on them.  
     
 Why OpenRaster?  
-As of version 2.8 [Gimp](http://www.gimp.org/ "Gimp") can open this image file format.. Also is the native format of [MyPaint](http://mypaint.intilinux.com/ "MyPaint") (not tested yet)  
+As of version 2.8 [Gimp](http://www.gimp.org/ "Gimp") can open this image file format.. Also is the native format of [MyPaint](http://mypaint.intilinux.com/ "MyPaint")  
   
 Requirements:  
 PythonMagick, ElementTree 
