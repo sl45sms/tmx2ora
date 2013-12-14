@@ -8,7 +8,8 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-import tempfile, zipfile, os
+import tempfile, zipfile, os, sys, getopt,shutil
+
 try:
  import xml.etree.cElementTree as ET
 except ImportError:
@@ -25,8 +26,45 @@ def getLayerData(layer):
 
 
 ########################################################################
-#TODO command line parammeters
-TMX = ET.parse("athina.xml")  #change here as needed
+#command line parammeters
+
+options, remainder = getopt.getopt(sys.argv[1:], 'o:v:h', ['output=', 
+                                                           'verbose',
+                                                           'help',
+                                                           ])
+ora_filename=""
+verbose=False
+for opt, arg in options:
+    if opt in ('-o', '--output'):
+       ora_filename = arg
+    elif opt in ('-v', '--verbose'):
+          verbose = True
+    elif opt in ('-h','--help'):
+         print """
+Usage: tmx2ora [option] infile.tmx\n
+Options:
+-o, --output  : Optional,if not set output filename 
+                is the same with tmx with extension .ora
+-v, --verbose : Optional,letting you see just what the rogram is doing.
+-h, --help    : This Help
+"""
+         exit(0)
+
+if len(remainder)==0:
+   print "You have to provide tmx file see --help"
+   exit(1)
+
+tmx_filename=remainder[0]
+
+if ora_filename=="":
+   ora_filename=remainder[0].replace(".tmx",".ora")
+   if ora_filename.endswith(".ora")==False:
+	   ora_filename+=".ora"
+
+
+########################################################################
+# main
+TMX = ET.parse(tmx_filename)  
 map = TMX.getroot()
 
 #set globals
@@ -59,12 +97,10 @@ oraxml = image.attrib
 oraxml['w'] = str(outimagewidth)
 oraxml['h'] = str(outimageheight)
 
-imgcount=0
 #parse layers 
-for path in map:
+for path in reversed(map):
     tagtype=path.tag
     if tagtype == 'layer':
-     print 'layer'
      #create canvas image
      canvas = Magick.Image(Magick.Geometry(outimagewidth,outimageheight),"transparent")
      canvas.magick('PNG')
@@ -81,8 +117,7 @@ for path in map:
                 tsi = Magick.Image(Magick.Blob(tilesetimageraw)) 
                 tsi.crop(Magick.Geometry(tilewidth,tileheight,TidX,TidY)) #or string "WxH+x+y" 
                 canvas.composite(tsi,PosX,PosY,Magick.CompositeOperator.CopyCompositeOp)
-     imgcount+=1
-     canvas.write(datafolder+'/'+str(imgcount)+"_"+path.attrib['name']+'.png')
+     canvas.write(datafolder+'/'+path.attrib['name']+'.png')
      #create layer 
      layer = ET.Element('layer')
      stack.append(layer)
@@ -104,10 +139,9 @@ f.write(xml)
 f.close()
 
 #create thubnail
-#prota ftiaxno ton camva gia authn
 canvas = Magick.Image(Magick.Geometry(256,256),"transparent")
 canvas.magick('PNG8')
-for img in sorted(os.listdir(datafolder)):
+for img in os.listdir(datafolder):
     print img
     tsi = Magick.Image(datafolder+"/"+img) 
     tsi.resize("256x256")
@@ -115,17 +149,16 @@ for img in sorted(os.listdir(datafolder)):
 canvas.write(thumbnailfolder+"/thumbnail.png")
 
 #ok now the zip.....
-ora = zipfile.ZipFile('out.ora', 'w')
+ora = zipfile.ZipFile(ora_filename, 'w')
 ora.writestr('mimetype', 'image/openraster',zipfile.ZIP_STORED)
 ora.write(tmpfolder+"/stack.xml","stack.xml",zipfile.ZIP_DEFLATED)
 ora.write(thumbnailfolder+"/thumbnail.png","Thumbnails/thumbnail.png",zipfile.ZIP_DEFLATED)
 
 #For every img
 for img in os.listdir(datafolder):
-    ora.write(datafolder+"/"+img,"data/"+img[2:],zipfile.ZIP_DEFLATED)
+    ora.write(datafolder+"/"+img,"data/"+img,zipfile.ZIP_DEFLATED)
 
 ora.close()
 
 #and finaly delete tmpfolder
-#TODO
-
+shutil.rmtree(tmpfolder)
