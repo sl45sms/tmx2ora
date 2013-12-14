@@ -1,7 +1,7 @@
 tmx2ora
 =======
 
-Create a layered [OpenRaster[(http://www.freedesktop.org/wiki/Specifications/OpenRaster/ "OpenRaster") image from [TMX Map Format](https://github.com/bjorn/tiled/wiki/TMX-Map-Format "TMX Map Format") ([Tiled](https://github.com/bjorn/tiled "Tiled"))
+Create a layered [OpenRaster](http://www.freedesktop.org/wiki/Specifications/OpenRaster/ "OpenRaster") image from [TMX Map Format](https://github.com/bjorn/tiled/wiki/TMX-Map-Format "TMX Map Format") ([Tiled](https://github.com/bjorn/tiled "Tiled"))
 
 
 Why? 
