@@ -17,12 +17,25 @@ except ImportError:
 import PythonMagick as Magick
 
 #Get CSV as char array
-def getLayerData(layer):
+def getTMXlayerData(layer):
  for data in layer:
   if data.attrib['encoding']!='csv': 
 	 print "Sory Only CSV encoding supported"
 	 exit(1)
   return data.text.replace('\n', '').split(',')
+
+def setORAlayer(stack,src,name):
+    layer = ET.Element('layer')
+    stack.append(layer)
+    layer = layer.attrib
+    layer['src'] = src
+    layer['name'] = name
+    layer['x'] = '0'
+    layer['y'] = '0'
+    layer['opacity'] = '1.0'
+    layer['visibility'] = 'visible'
+    layer['composite-op'] = 'svg:src-over'
+    return stack
 
 
 ########################################################################
@@ -104,7 +117,7 @@ for path in reversed(map):
      #create canvas image
      canvas = Magick.Image(Magick.Geometry(outimagewidth,outimageheight),"transparent")
      canvas.magick('PNG')
-     gidarray = getLayerData(path)
+     gidarray = getTMXlayerData(path)
      for y in range(0, height):
          for x in range(0,width):
              Gid = x+(width * y)
@@ -119,17 +132,12 @@ for path in reversed(map):
                 canvas.composite(tsi,PosX,PosY,Magick.CompositeOperator.CopyCompositeOp)
      canvas.write(datafolder+'/'+path.attrib['name']+'.png')
      #create layer 
-     layer = ET.Element('layer')
-     stack.append(layer)
-     layer = layer.attrib
-     layer['src'] = 'data/'+path.attrib['name']+'.png'
-     layer['name'] = path.attrib['name']
-     layer['x'] = '0'
-     layer['y'] = '0'
-     layer['opacity'] = '1.0'
-     layer['visibility'] = 'visible'
-     layer['composite-op'] = 'svg:src-over'
+     stack = setORAlayer(stack,'data/'+path.attrib['name']+'.png',path.attrib['name'])
     elif tagtype == 'imagelayer':
+     #TODO copy image from path to data folder
+     #convert to png? or leavit as is...
+     #create layer
+     
      print 'image'
 
 #write stack.xml
