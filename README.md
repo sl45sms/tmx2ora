@@ -4,7 +4,7 @@ tmx2ora
 Create a layered [OpenRaster](http://www.freedesktop.org/wiki/Specifications/OpenRaster/ "OpenRaster") image from [TMX Map Format](https://github.com/bjorn/tiled/wiki/TMX-Map-Format "TMX Map Format") ([Tiled](https://github.com/bjorn/tiled "Tiled"))
 
 
-Why? 
+Why?  
 For a game i need a large number of pre rendered images..  
 Tiled help's a lot to create the visuals for the game but i need to add final touch on them.  
     
