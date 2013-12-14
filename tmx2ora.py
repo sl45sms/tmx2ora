@@ -24,7 +24,7 @@ def getTMXlayerData(layer):
 	 exit(1)
   return data.text.replace('\n', '').split(',')
 
-def setORAlayer(stack,src,name): #TODO set visibility from TMX
+def setORAlayer(stack,src,name,visibility):
     layer = ET.Element('layer')
     stack.append(layer)
     layer = layer.attrib
@@ -33,7 +33,10 @@ def setORAlayer(stack,src,name): #TODO set visibility from TMX
     layer['x'] = '0'
     layer['y'] = '0'
     layer['opacity'] = '1.0'
-    layer['visibility'] = 'visible' #TODO apo to tide
+    if visibility=='No':
+      layer['visibility'] = 'hidden' 
+    else:
+      layer['visibility'] = 'visible'
     layer['composite-op'] = 'svg:src-over'
     return stack
 
@@ -125,7 +128,7 @@ for path in reversed(map):
              Gid = x+(width * y)
              Tid =  int(gidarray[Gid])
              if Tid != 0:
-                TidX = (Tid*tilewidth % tilesetimgwidth)-tilewidth #giati thelei -32?
+                TidX = (Tid*tilewidth % tilesetimgwidth)-tilewidth #why need's -32?
                 TidY = ((Tid/(tilesetimgwidth/tilewidth))*tileheight % tilesetimgheight)
                 PosX = x * tilewidth
                 PosY = y * tileheight            
@@ -134,7 +137,7 @@ for path in reversed(map):
                 canvas.composite(tsi,PosX,PosY,Magick.CompositeOperator.CopyCompositeOp)
      canvas.write(datafolder+'/'+str(imgc)+"_"+path.attrib['name']+'.png')
      #create layer 
-     stack=setORAlayer(stack,'data/'+str(imgc)+"_"+path.attrib['name']+'.png',path.attrib['name'])
+     stack=setORAlayer(stack,'data/'+str(imgc)+"_"+path.attrib['name']+'.png',path.attrib['name'],'No' if 'visible' in path.attrib else 'Yes')
     elif tagtype == 'imagelayer':
      for images in path:
 		 #convert to png... Gimp don't handle mix of jpg and png on data folder... 
@@ -145,7 +148,7 @@ for path in reversed(map):
          img.quality(100) #full compression
          img.magick('PNG')
          img.write(imgdest)
-         stack=setORAlayer(stack,imgdata,path.attrib['name'])
+         stack=setORAlayer(stack,imgdata,path.attrib['name'],'No' if 'visible' in path.attrib else 'Yes')
 
 #write stack.xml
 xml = ET.tostring(image, encoding='UTF-8')
