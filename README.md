@@ -11,7 +11,7 @@ Tiled help's a lot to create the visuals for the game but i need to add final to
 Why OpenRaster?  
 As of version 2.8 Gimp can open this image file format.. Also is the native format of mypaint (not tested yet)  
   
-Requirements: 
+Requirements:  
 PythonMagick, ElementTree 
  
 On Ubuntu 13.10  
