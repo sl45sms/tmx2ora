@@ -18,4 +18,6 @@ On Ubuntu 13.10
 sudo apt-get install python-lxml python-pythonmagick 
  
 Limitations:  
-Only one tileset, Alpha code... stay tuned... 
+Only one tileset, 
+Layer data as CSV
+Alpha code... stay tuned... 
