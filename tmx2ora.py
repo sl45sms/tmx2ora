@@ -24,7 +24,7 @@ def getTMXlayerData(layer):
 	 exit(1)
   return data.text.replace('\n', '').split(',')
 
-def setORAlayer(stack,src,name):
+def setORAlayer(stack,src,name): #TODO set visibility from TMX
     layer = ET.Element('layer')
     stack.append(layer)
     layer = layer.attrib
@@ -33,7 +33,7 @@ def setORAlayer(stack,src,name):
     layer['x'] = '0'
     layer['y'] = '0'
     layer['opacity'] = '1.0'
-    layer['visibility'] = 'visible'
+    layer['visibility'] = 'visible' #TODO apo to tide
     layer['composite-op'] = 'svg:src-over'
     return stack
 
@@ -110,9 +110,11 @@ oraxml = image.attrib
 oraxml['w'] = str(outimagewidth)
 oraxml['h'] = str(outimageheight)
 
-#parse layers 
+#parse layers
+imgc=0 
 for path in reversed(map):
     tagtype=path.tag
+    imgc=imgc+1
     if tagtype == 'layer':
      #create canvas image
      canvas = Magick.Image(Magick.Geometry(outimagewidth,outimageheight),"transparent")
@@ -130,26 +132,32 @@ for path in reversed(map):
                 tsi = Magick.Image(Magick.Blob(tilesetimageraw)) 
                 tsi.crop(Magick.Geometry(tilewidth,tileheight,TidX,TidY)) #or string "WxH+x+y" 
                 canvas.composite(tsi,PosX,PosY,Magick.CompositeOperator.CopyCompositeOp)
-     canvas.write(datafolder+'/'+path.attrib['name']+'.png')
+     canvas.write(datafolder+'/'+str(imgc)+"_"+path.attrib['name']+'.png')
      #create layer 
-     stack = setORAlayer(stack,'data/'+path.attrib['name']+'.png',path.attrib['name'])
+     stack=setORAlayer(stack,'data/'+str(imgc)+"_"+path.attrib['name']+'.png',path.attrib['name'])
     elif tagtype == 'imagelayer':
-     #TODO copy image from path to data folder
-     #convert to png? or leavit as is...
-     #create layer
-     
-     print 'image'
+     for images in path:
+		 #convert to png... Gimp don't handle mix of jpg and png on data folder... 
+         imgsrc=images.attrib['source']
+         imgdest=datafolder+"/"+str(imgc)+"_"+path.attrib['name']+".png"
+         imgdata="data/"+str(imgc)+"_"+path.attrib['name']+".png"
+         img = Magick.Image(imgsrc)
+         img.quality(100) #full compression
+         img.magick('PNG')
+         img.write(imgdest)
+         stack=setORAlayer(stack,imgdata,path.attrib['name'])
 
 #write stack.xml
 xml = ET.tostring(image, encoding='UTF-8')
+print xml
 f = open(tmpfolder+'/stack.xml', 'w')
 f.write(xml)
 f.close()
 
-#create thubnail
+#create thubnail #TODO show only visible layers
 canvas = Magick.Image(Magick.Geometry(256,256),"transparent")
 canvas.magick('PNG8')
-for img in os.listdir(datafolder):
+for img in reversed(os.listdir(datafolder)):
     print img
     tsi = Magick.Image(datafolder+"/"+img) 
     tsi.resize("256x256")
