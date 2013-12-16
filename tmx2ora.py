@@ -20,7 +20,7 @@ import PythonMagick as Magick
 def getTMXlayerData(layer):
  for data in layer:
   if data.attrib['encoding']!='csv': 
-	 print "Sory Only CSV encoding supported"
+	 print "Sorry Only CSV encoding supported"
 	 exit(1)
   return data.text.replace('\n', '').split(',')
 
